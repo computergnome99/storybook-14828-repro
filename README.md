@@ -1,27 +1,106 @@
-# StorybookBugRepro
+# Storybook #14828 Reproduction
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.0.
+This project is built as a reproduction of [issue #14828](https://github.com/storybookjs/storybook/issues/14828) based on the [reproduction instructions](https://github.com/storybookjs/storybook/issues/14828#issuecomment-1523875596) provided by [@John-Zimmer](https://github.com/John-Zimmer).
 
-## Development server
+## Error Details
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+![Error Screenshot](Error-Screenshot.png)
 
-## Code scaffolding
+``` bash
+Error: Cannot read properties of undefined (reading 'selector')
+  at prepareMain (/vendors-node_modules_storybook_addon-docs_angular_index_js-node_modules_storybook_addon-essen-e279da.iframe.bundle.js:69199:82))
+  at /vendors-node_modules_storybook_addon-docs_angular_index_js-node_modules_storybook_addon-essen-e279da.iframe.bundle.js:69185:17
+  at /vendors-node_modules_storybook_addon-docs_angular_index_js-node_modules_storybook_addon-essen-e279da.iframe.bundle.js:69179:14
+  at cleanArgsDecorator (/vendors-node_modules_storybook_addon-docs_angular_index_js-node_modules_storybook_addon-essen-e279da.iframe.bundle.js:69228:10))
+  at /vendors-node_modules_storybook_addon-docs_angular_index_js-node_modules_storybook_addon-essen-e279da.iframe.bundle.js:69178:28
+  at /vendors-node_modules_storybook_addon-docs_angular_index_js-node_modules_storybook_addon-essen-e279da.iframe.bundle.js:69179:14
+  at withOutline (/vendors-node_modules_storybook_addon-docs_angular_index_js-node_modules_storybook_addon-essen-e279da.iframe.bundle.js:68027:43))
+  at hookified (/sb-preview/runtime.js:7:17241))
+  at /vendors-node_modules_storybook_addon-docs_angular_index_js-node_modules_storybook_addon-essen-e279da.iframe.bundle.js:69178:28
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```
 
-## Build
+## Requirements
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+This bug is *potentially* caused by using NPM 7 as the error seems to be resolved when using the `--legacy-peer-deps` flag with NPM. As such, **please ensure you are using `npm 7.0+` when running this project to ensure consistent reproduction.**
 
-## Running unit tests
+## 👷‍♂️ Running the project
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Clone the project to local:
 
-## Running end-to-end tests
+``` bash
+git clone https://github.com/computergnome99/storybook-14828-repro.git
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Open the project and install dependencies:
 
-## Further help
+``` bash
+cd storybook-14828-repro;
+npm install
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+Run Storybook:
+
+``` bash
+npm run storybook
+```
+
+## 👿 To see issue
+
+Navigate to the `./project/example-lib` dir and install deps:
+
+``` bash
+cd ./project/example-lib;
+npm install
+```
+
+Navigate back to top-level dir and run Storybook:
+
+``` bash
+cd ../../;
+npm run storybook
+```
+
+## 😇 To resolve issue
+
+Remove `node_modules` directory from `example-lib`:
+
+``` bash
+rm -rf ./projects/example-lib/node_modules
+```
+
+Run Storybook again:
+
+``` bash
+npm run storybook
+```
+
+### Alternate
+
+If dependencies are required in the library project (as an example - not required for this project), you can install dependencies with the `--legacy-peer-deps` flag:
+
+Ensure `node_modules` directory is removed from `example-lib`:
+
+``` bash
+rm -rf ./projects/example-lib/node_modules
+```
+
+Install dependencies in `example-lib` with `--legacy-peer-deps` flag:
+
+``` bash
+cd ./project/example-lib;
+npm install --legacy-peer-deps;
+cd ../../
+```
+
+Run Storybook again:
+
+``` bash
+npm run storybook
+```
+
+## Conclusion
+
+It does appear that this error is the result of installing dependencies inside the library application using `npm 7+`.
+
+I hope this reproduction was helpful.
