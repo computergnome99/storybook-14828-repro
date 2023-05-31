@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "npm run build-storybook",
+    "build": "npm install --prefix ./projects/example-lib; npm run build-storybook",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "storybook": "ng run example-lib:storybook",
